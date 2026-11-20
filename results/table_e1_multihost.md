@@ -1,0 +1,6 @@
+| suite | defense | n_benign | n_attack | benign_utility_% | utility_under_attack_% | ASR_official_% | ASR_executed_% | benign_runs_with_block_% | stepups_per_run | runs_revoked_% | decision_us_p50 | decision_us_p95 | decision_us_p99 | authz_rtt_ms_p50 | authz_rtt_ms_p95 | authz_rtt_ms_p99 | token_exchange_ms_p50 | token_exchange_ms_p95 | scope_compile_ms_p50 | scope_compile_ms_p95 | security_overhead_per_task_ms_p50 | security_overhead_per_task_ms_p95 | task_wall_s_p50 | task_wall_s_p95 | errors |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ALL | aztac | 16 | 144 | 100.0 | 93.8 | 0.0 | 0.0 | 0.0 | 0.0 | 10.0 | 410.0 | 903.8 | 68625.3 | 35.3 | 89.9 | 159.8 | 75.6 | 107.5 | 0.139 | 0.208 | 192.1 | 368.7 | – | – | 0 |
+| ALL | none | 16 | 144 | 100.0 | 87.5 | 99.3 | 99.3 | 0.0 | 0.0 | 0.0 | – | – | – | – | – | – | – | – | – | – | – | – | – | – | 0 |
+| banking | aztac | 16 | 144 | 100.0 | 93.8 | 0.0 | 0.0 | 0.0 | 0.0 | 10.0 | 410.0 | 903.8 | 68625.3 | 35.3 | 89.9 | 159.8 | 75.6 | 107.5 | 0.139 | 0.208 | 192.1 | 368.7 | – | – | 0 |
+| banking | none | 16 | 144 | 100.0 | 87.5 | 99.3 | 99.3 | 0.0 | 0.0 | 0.0 | – | – | – | – | – | – | – | – | – | – | – | – | – | – | 0 |

@@ -1,0 +1,61 @@
+[
+  {
+    "concurrency": 10,
+    "duration_s": 40.34557160001714,
+    "requests": 1284,
+    "throughput_rps": 31.825054128107944,
+    "authz_ms_p50": 52.25540010724217,
+    "authz_ms_p95": 188.7294000480324,
+    "authz_ms_p99": 586.4223000826314,
+    "authz_ms_mean": 75.4829348130964,
+    "token_exchanges": 77,
+    "exchange_ms_p50": 32.87100000306964,
+    "exchange_ms_p95": 137.77159992605448,
+    "exchange_ms_p99": 154.76760000456125,
+    "outcomes": {
+      "ALLOW": 1143,
+      "DENY": 141,
+      "NET_ReadTimeout": 10
+    },
+    "errors": 10
+  },
+  {
+    "concurrency": 50,
+    "duration_s": 40.51900279999245,
+    "requests": 1114,
+    "throughput_rps": 27.493272860116083,
+    "authz_ms_p50": 263.344099977985,
+    "authz_ms_p95": 638.0888998974115,
+    "authz_ms_p99": 4303.2711000414565,
+    "authz_ms_mean": 443.7240806985705,
+    "token_exchanges": 90,
+    "exchange_ms_p50": 173.38299995753914,
+    "exchange_ms_p95": 472.26700000464916,
+    "exchange_ms_p99": 484.2707999050617,
+    "outcomes": {
+      "ALLOW": 1008,
+      "DENY": 106,
+      "NET_ReadTimeout": 50
+    },
+    "errors": 50
+  },
+  {
+    "concurrency": 100,
+    "duration_s": 31.626123500056565,
+    "requests": 971,
+    "throughput_rps": 30.702466585835705,
+    "authz_ms_p50": 605.3770000580698,
+    "authz_ms_p95": 22499.638300039805,
+    "authz_ms_p99": 22961.266500060447,
+    "authz_ms_mean": 3096.3320964992904,
+    "token_exchanges": 116,
+    "exchange_ms_p50": 626.7204000614583,
+    "exchange_ms_p95": 1775.3775999881327,
+    "exchange_ms_p99": 2033.001400064677,
+    "outcomes": {
+      "ALLOW": 895,
+      "DENY": 76
+    },
+    "errors": 0
+  }
+]
