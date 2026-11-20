@@ -1,0 +1,67 @@
+# Multi-host deployment. Run each profile on its own VM:
+#
+#   VM1 (identity):     docker compose --profile identity up -d       -> Keycloak :8080, ATS :8100
+#   VM2 (enforcement):  docker compose --profile enforcement up -d    -> Gateway :8200, OPA :8181
+#   VM3 (enforcement2): docker compose --profile enforcement up -d    -> second gateway (revocation propagation)
+#   VM4 (agents):       run experiments/*.py against VM1/VM2 (see README)
+#
+# Everything on one machine:  docker compose --profile identity --profile enforcement up -d
+# Copy .env.example to .env and set the host names first.
+
+services:
+  keycloak:
+    profiles: ["identity"]
+    image: quay.io/keycloak/keycloak:26.0
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      # Tokens must carry the same issuer whether fetched from the agent VM or the ATS.
+      KC_HOSTNAME: http://${IDENTITY_HOST}:8080
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+    volumes:
+      - ./keycloak/aztac-realm.json:/opt/keycloak/data/import/aztac-realm.json:ro
+    ports: ["8080:8080"]
+
+  ats:
+    profiles: ["identity"]
+    build: {context: .., dockerfile: deploy/Dockerfile}
+    command: ["uvicorn", "aztac.http_apps:ats_app", "--host", "0.0.0.0", "--port", "8100", "--workers", "1"]
+    environment:
+      ATS_ISSUER: https://ats.aztac.local
+      ATS_KEY_PATH: /data/ats_key.json
+      ATS_ADMIN_KEY: ${ATS_ADMIN_KEY}
+      ATS_TTL_S: "300"
+      ATS_AGENTS: ""                                  # comma list to restrict agent identities
+      SUBJECT_JWKS_URL: http://keycloak:8080/realms/aztac/protocol/openid-connect/certs
+      SUBJECT_ISSUER: http://${IDENTITY_HOST}:8080/realms/aztac
+    volumes: ["ats-data:/data"]
+    ports: ["8100:8100"]
+    depends_on: [keycloak]
+
+  opa:
+    profiles: ["enforcement"]
+    image: openpolicyagent/opa:latest
+    command: ["run", "--server", "--addr", "0.0.0.0:8181", "/policy/aztac.rego"]
+    volumes: ["../policy:/policy:ro"]
+    ports: ["8181:8181"]
+
+  gateway:
+    profiles: ["enforcement"]
+    build: {context: .., dockerfile: deploy/Dockerfile}
+    # One worker per container: approval challenges and risk scores are per gateway instance.
+    command: ["uvicorn", "aztac.http_apps:gateway_app", "--host", "0.0.0.0", "--port", "8200", "--workers", "1"]
+    environment:
+      ATS_URL: http://${IDENTITY_HOST}:8100
+      ATS_ISSUER: https://ats.aztac.local
+      ATS_ADMIN_KEY: ${ATS_ADMIN_KEY}
+      APPROVER_KEY: ${APPROVER_KEY}
+      ENFORCEMENT_MODE: ${ENFORCEMENT_MODE:-graduated}
+      RISK_THRESHOLD: ${RISK_THRESHOLD:-2.0}
+      REVOCATION_POLL_MS: ${REVOCATION_POLL_MS:-200}
+      PDP: ${PDP:-python}                             # python | opa
+      OPA_URL: http://opa:8181
+    ports: ["8200:8200"]
+
+volumes:
+  ats-data:

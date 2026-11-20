@@ -1,0 +1,30 @@
+{
+  "realm": "aztac",
+  "enabled": true,
+  "accessTokenLifespan": 900,
+  "clients": [
+    {
+      "clientId": "agent-platform",
+      "name": "Enterprise agent platform",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "aztac-agent-platform-secret",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": ["http://localhost/*"]
+    }
+  ],
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@aztac.local",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Analyst",
+      "credentials": [{"type": "password", "value": "alice-password", "temporary": false}]
+    }
+  ]
+}
