@@ -1,0 +1,30 @@
+{
+  "banking": {
+    "benign_n": 16,
+    "benign_utility": 0.3125,
+    "attack_n": 144,
+    "utility_under_attack": 0.4444444444444444,
+    "asr": 0.006944444444444444
+  },
+  "slack": {
+    "benign_n": 21,
+    "benign_utility": 0.6190476190476191,
+    "attack_n": 105,
+    "utility_under_attack": 0.580952380952381,
+    "asr": 0.0
+  },
+  "travel": {
+    "benign_n": 20,
+    "benign_utility": 0.0,
+    "attack_n": 140,
+    "utility_under_attack": 0.03571428571428571,
+    "asr": 0.007142857142857143
+  },
+  "workspace": {
+    "benign_n": 40,
+    "benign_utility": 0.5,
+    "attack_n": 100,
+    "utility_under_attack": 0.53,
+    "asr": 0.0
+  }
+}
