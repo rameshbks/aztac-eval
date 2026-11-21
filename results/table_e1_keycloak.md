@@ -1,0 +1,7 @@
+| suite | defense | n_benign | n_attack | benign_utility_% | utility_under_attack_% | ASR_official_% | ASR_executed_% | benign_runs_with_block_% | stepups_per_run | runs_revoked_% | decision_us_p50 | decision_us_p95 | decision_us_p99 | authz_rtt_ms_p50 | authz_rtt_ms_p95 | authz_rtt_ms_p99 | token_exchange_ms_p50 | token_exchange_ms_p95 | scope_compile_ms_p50 | scope_compile_ms_p95 | security_overhead_per_task_ms_p50 | security_overhead_per_task_ms_p95 | task_wall_s_p50 | task_wall_s_p95 | errors |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ALL | aztac | 97 | 949 | 100.0 | 93.9 | 3.1 | 0.843 | 0.0 | 0.0 | 7.4 | 473.4 | 794.4 | 56243.1 | 36.9 | 64.3 | 115.4 | 160.3 | 227.5 | 0.886 | 3.1 | 303.6 | 598.3 | – | – | 0 |
+| banking | aztac | 16 | 144 | 100.0 | 93.8 | 0.0 | 0.0 | 0.0 | 0.0 | 10.0 | 481.3 | 2094.9 | 65778.9 | 36.6 | 89.0 | 190.6 | 167.6 | 254.2 | 0.127 | 0.231 | 294.8 | 557.9 | – | – | 0 |
+| slack | aztac | 21 | 105 | 100.0 | 79.0 | 22.9 | 2.9 | 0.0 | 0.0 | 16.7 | 459.5 | 718.0 | 61132.9 | 36.2 | 62.0 | 103.2 | 159.4 | 216.0 | 0.137 | 0.301 | 433.3 | 667.0 | – | – | 0 |
+| travel | aztac | 20 | 140 | 100.0 | 96.4 | 3.6 | 3.6 | 0.0 | 0.0 | 0.0 | 509.3 | 739.5 | 1966.3 | 37.1 | 54.4 | 82.3 | 159.3 | 203.2 | 0.479 | 1.5 | 445.2 | 824.9 | – | – | 0 |
+| workspace | aztac | 40 | 560 | 100.0 | 96.1 | 0.0 | 0.0 | 0.0 | 0.0 | 6.7 | 443.3 | 879.8 | 62271.5 | 37.5 | 74.3 | 115.2 | 159.7 | 227.5 | 0.980 | 3.4 | 271.1 | 435.6 | – | – | 0 |
