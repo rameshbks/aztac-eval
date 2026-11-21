@@ -95,6 +95,9 @@ def main():
     p.add_argument("--stack", default="inproc", choices=["inproc", "http"])
     p.add_argument("--ats-url", default="http://127.0.0.1:8100")
     p.add_argument("--gateway-url", default="http://127.0.0.1:8200")
+    p.add_argument("--keycloak-token-url", default=None, help="obtain user tokens from Keycloak (password grant)")
+    p.add_argument("--keycloak-client-id", default="agent-platform")
+    p.add_argument("--keycloak-user", default="alice")
     p.add_argument("--resume", action="store_true")
     p.add_argument("--out", required=True)
     a = p.parse_args()
@@ -102,7 +105,12 @@ def main():
     MODEL_NAMES.setdefault(a.model, a.model_display or ("Claude" if a.provider == "anthropic" else "GPT-4"))
     llm = get_llm(a.provider, a.model, None, "tool")
     llm.name = a.model
-    stack = (HTTPStack(a.ats_url, a.gateway_url) if a.stack == "http"
+    kc = None
+    if a.keycloak_token_url:
+        kc = dict(token_url=a.keycloak_token_url, client_id=a.keycloak_client_id,
+                  client_secret=os.getenv("KEYCLOAK_CLIENT_SECRET", ""), username=a.keycloak_user,
+                  password=os.getenv("KEYCLOAK_USER_PASSWORD", ""))
+    stack = (HTTPStack(a.ats_url, a.gateway_url, keycloak=kc) if a.stack == "http"
              else InProcStack(mode=a.mode, risk_threshold=a.risk_threshold))
     suites = get_suites(a.benchmark_version)
     rng = random.Random(a.seed)

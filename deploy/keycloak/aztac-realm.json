@@ -13,7 +13,33 @@
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
       "serviceAccountsEnabled": false,
-      "redirectUris": ["http://localhost/*"]
+      "redirectUris": [
+        "http://localhost/*"
+      ],
+      "protocolMappers": [
+        {
+          "name": "audience-agent-platform",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "agent-platform",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        },
+        {
+          "name": "sub",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-sub-mapper",
+          "consentRequired": false,
+          "config": {
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
     }
   ],
   "users": [
@@ -24,7 +50,13 @@
       "emailVerified": true,
       "firstName": "Alice",
       "lastName": "Analyst",
-      "credentials": [{"type": "password", "value": "alice-password", "temporary": false}]
+      "credentials": [
+        {
+          "type": "password",
+          "value": "alice-password",
+          "temporary": false
+        }
+      ]
     }
   ]
 }

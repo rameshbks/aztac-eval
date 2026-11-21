@@ -20,6 +20,15 @@ import json
 import re
 
 TOOL_META: dict[str, dict[str, dict]] = {
+    # Case study: an enterprise REST API reached through an agent framework (casestudy/).
+    "corp": {
+        "list_inbox": {"class": "read", "targets": [], "bounded": []},
+        "read_file": {"class": "read", "targets": [], "bounded": []},
+        "list_transactions": {"class": "read", "targets": [], "bounded": []},
+        "send_email": {"class": "egress", "targets": ["to"], "bounded": []},
+        "share_file": {"class": "egress", "targets": ["email"], "bounded": []},
+        "transfer": {"class": "write", "targets": ["iban"], "bounded": ["amount"]},
+    },
     "banking": {
         "send_money": {"class": "write", "targets": ["recipient"], "bounded": ["amount"]},
         "schedule_transaction": {"class": "write", "targets": ["recipient"], "bounded": ["amount"]},
@@ -119,6 +128,7 @@ _EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[a-z]{2,}$")
 _URL = re.compile(r"^(https?://)?[a-z0-9.-]+\.[a-z]{2,}(/\S*)?$")
 TARGET_FORMATS: dict[tuple[str, str], re.Pattern] = {
     ("banking", "recipient"): _IBAN,
+    ("corp", "to"): _EMAIL, ("corp", "email"): _EMAIL, ("corp", "iban"): _IBAN,
     ("workspace", "recipients"): _EMAIL, ("workspace", "cc"): _EMAIL, ("workspace", "bcc"): _EMAIL,
     ("workspace", "participants"): _EMAIL, ("workspace", "email"): _EMAIL,
     ("travel", "recipients"): _EMAIL, ("travel", "cc"): _EMAIL, ("travel", "bcc"): _EMAIL,

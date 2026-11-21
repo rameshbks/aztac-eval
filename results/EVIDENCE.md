@@ -11,6 +11,8 @@ Each result in the paper and the file it comes from. All files are in `results/`
 | Table IV (E2) | Real gpt-4o-mini agents, 7 defenses, 4 suites | `e2_gpt4omini.jsonl` (4,802 runs), `table_e2_final.md` |
 | Table IV, CaMeL row | CaMeL from its public code, 489 pairs | `camel/summary.json`, `camel/crashes.jsonl` |
 | E4 (load) | Throughput and latency at 10/50/100 agents | `e4_load_multihost.json` (remote client), `e4_load_summary.md` (both runs) |
+| Gateway-only baselines (Section VI-A) | Static per-tool policy; per-task tools without argument pins; AZTAC under the same settings | `static_role.jsonl`, `task_tools.jsonl`, `aztac_pins_approveall.jsonl` |
+| E2 statistics | Task-clustered intervals, paired McNemar tests | `e2_clustered_stats.txt` (from `experiments/clustered_stats.py`) |
 | E5 (revocation) | Revocation delay across two gateways; network baseline | the E5 and baseline `.json` files |
 
 Each line of a `.jsonl` file is one run: suite, user task, injection task (empty for benign runs),

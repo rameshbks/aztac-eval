@@ -110,6 +110,23 @@ It uses CaMeL's own pipeline and log folder, runs the same workspace pairs as th
 records interpreter crashes in `results_camel/crashes.jsonl` instead of stopping (each counts as a
 failed task with no attack success). Results are written to `results_camel/summary.json`.
 
+**Gateway-only baselines** (`run_scripted.py --perturb static_role|over_broad_targets --approver approve_all --risk-threshold inf`).
+`static_role` grants every side-effecting tool of the suite without argument constraints, as a static per-tool
+policy in today's agent IAM would; `over_broad_targets` keeps the task's tools but drops all argument pins.
+Compare with plain AZTAC under the same approver and threshold.
+
+**Three-host deployment with Keycloak.** Host 1: `bash deploy/codespace_identity.sh <ATS_ADMIN_KEY>` (Keycloak
+and ATS). Host 2: `bash deploy/codespace_enforcement.sh <ATS_URL> <ATS_ADMIN_KEY> <SEED>` (two gateways and the
+case-study API). Host 3 (agents): `run_scripted.py` / `run_llm.py` with `--stack http --keycloak-token-url ...`.
+
+**Case study** (`casestudy/`). An OpenAI Agents SDK agent uses a small enterprise REST API (mail, files,
+payments) that accepts calls only from the gateway or, in the baseline, a standing API key. Six tasks, three
+injected goals, `none` vs `aztac`. Install `casestudy/requirements.txt` in a separate environment, then run
+`casestudy/run_casestudy.py` and `casestudy/summarize.py`.
+
+**Statistics** (`clustered_stats.py`): bootstrap intervals over user tasks within each suite and exact McNemar
+tests on identical pairs.
+
 **E3: scope errors × human behaviour** (`run_scripted.py --perturb ... --approver ...`).
 Over-broad tools, unpinned targets and over-narrow scopes, each crossed with three human
 approvers: oracle (attentive), approve_all (approval fatigue) and reject_all (no human

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 
 import httpx
@@ -48,10 +49,10 @@ class InProcStack:
 class HTTPStack:
     """ATS and gateway on other hosts. Subject token comes from Keycloak (or ATS dev IdP)."""
 
-    def __init__(self, ats_url, gateway_url, approver_key="approver-secret", admin_key="admin-secret",
-                 keycloak=None):
+    def __init__(self, ats_url, gateway_url, approver_key=None, admin_key=None, keycloak=None):
         self.ats_url, self.gateway_url = ats_url.rstrip("/"), gateway_url.rstrip("/")
-        self.approver_key, self.admin_key = approver_key, admin_key
+        self.approver_key = approver_key or os.getenv("APPROVER_KEY", "approver-secret")
+        self.admin_key = admin_key or os.getenv("ATS_ADMIN_KEY", "admin-secret")
         self.keycloak = keycloak  # dict(token_url, client_id, client_secret, username, password)
         self.c = httpx.Client(timeout=10)
 

@@ -53,7 +53,7 @@ def main():
     p.add_argument("--risk-threshold", type=float, default=2.0)
     p.add_argument("--read-mode", default="suite", choices=["suite", "scoped"])
     p.add_argument("--perturb", default="none",
-                   choices=["none", "over_broad_tools", "over_broad_targets", "over_narrow"])
+                   choices=["none", "over_broad_tools", "over_broad_targets", "over_narrow", "static_role"])
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--limit-user-tasks", type=int, default=None)
     p.add_argument("--stack", default="inproc", choices=["inproc", "http"])

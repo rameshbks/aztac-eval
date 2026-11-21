@@ -1,0 +1,6 @@
+# Separate environment for the case study (the Agents SDK needs a newer openai package than AgentDojo pins).
+openai-agents>=0.25
+httpx>=0.27
+pyjwt[crypto]>=2.8
+cryptography>=42
+pydantic>=2.7

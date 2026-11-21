@@ -150,9 +150,28 @@ def build_gateway_app() -> FastAPI:
         except KeyError as e:
             raise HTTPException(404, str(e))
 
+    # Enforcing reverse proxy (case study): the upstream API trusts only this gateway's secret, so an
+    # agent token can reach it only through an ALLOW or NARROW decision.
+    upstream, upstream_secret = _env("UPSTREAM_URL"), _env("UPSTREAM_SECRET", "")
+    proxy = httpx.Client(timeout=15)
+
+    @app.post("/call")
+    def call(b: AuthorizeBody):
+        if not upstream:
+            raise HTTPException(404, "no upstream configured")
+        d = gw.authorize(b.token, b.tool, b.args)
+        if d["outcome"] not in ("ALLOW", "NARROW"):
+            return {"decision": d}
+        args = d.get("args") or b.args
+        t0 = time.perf_counter()
+        r = proxy.post(f"{upstream.rstrip('/')}/tools/{b.tool}", json=args, headers={"x-caller-key": upstream_secret})
+        body = r.json() if r.headers.get("content-type", "").startswith("application/json") else r.text
+        return {"decision": d, "status": r.status_code, "result": body,
+                "upstream_ms": (time.perf_counter() - t0) * 1e3}
+
     @app.get("/healthz")
     def healthz():
-        return {"ok": True, "mode": gw.mode}
+        return {"ok": True, "mode": gw.mode, "upstream": bool(upstream)}
 
     return app
 

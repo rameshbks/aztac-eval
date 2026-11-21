@@ -1,0 +1,24 @@
+none                         ASR_exec  39.7  cluster95 [34.1, 45.3]
+spotlighting_with_delimiting ASR_exec  35.0  cluster95 [29.7, 40.7]
+repeat_user_prompt           ASR_exec  13.1  cluster95 [8.8, 18.0]
+tool_filter                  ASR_exec   6.6  cluster95 [3.9, 9.6]
+aztac-llm                    ASR_exec   2.5  cluster95 [1.7, 3.4]
+aztac-llm+spotlighting       ASR_exec   1.4  cluster95 [0.7, 2.2]
+aztac-oracle                 ASR_exec   2.0  cluster95 [1.2, 3.0]
+
+Paired vs aztac-llm (same 589 pairs): diff = baseline - aztac, cluster CI, exact McNemar
+none                         diff  37.2 [31.7, 42.6]  discordant b=224 c=5 p=1.2e-59
+spotlighting_with_delimiting diff  32.4 [26.9, 37.7]  discordant b=195 c=4 p=1.6e-52
+repeat_user_prompt           diff  10.5 [6.4, 14.8]  discordant b=74 c=12 p=4.7e-12
+tool_filter                  diff   4.1 [1.3, 7.2]  discordant b=32 c=8 p=0.00018
+aztac-llm+spotlighting       diff  -1.2 [-2.0, -0.3]  discordant b=1 c=8 p=0.039
+aztac-oracle                 diff  -0.5 [-1.2, 0.2]  discordant b=2 c=5 p=0.45
+
+Benign utility paired vs none (97 tasks)
+none                         73.2  lost 0 gained 0 p=1
+spotlighting_with_delimiting 69.1  lost 9 gained 5 p=0.42
+repeat_user_prompt           68.0  lost 11 gained 6 p=0.33
+tool_filter                  66.0  lost 13 gained 6 p=0.17
+aztac-llm                    64.9  lost 13 gained 5 p=0.096
+aztac-llm+spotlighting       64.9  lost 11 gained 3 p=0.057
+aztac-oracle                 74.2  lost 8 gained 9 p=1

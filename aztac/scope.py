@@ -209,6 +209,8 @@ def perturb(scope: list[dict], suite, kind: str, rng: random.Random) -> list[dic
     over_broad_tools  - grant every side-effecting tool in the suite, unpinned
     over_broad_targets- keep tools but drop all target pins and bounds
     over_narrow       - remove one side-effecting tool the task needs
+    static_role       - every side-effecting tool in the suite, unpinned: a static, role-level
+                        per-tool policy as configured in today's agent gateways and OAuth scopes
     none              - unchanged
     """
     scope = json.loads(json.dumps(scope))
@@ -222,6 +224,15 @@ def perturb(scope: list[dict], suite, kind: str, rng: random.Random) -> list[dic
         for t in suite.tools:
             if t.name not in have and is_side_effecting(suite_name, t.name):
                 tool_entries.append(_entry(suite_name, t.name))
+        return tool_entries + others
+    if kind == "static_role":
+        have = {e["actions"][0] for e in tool_entries}
+        for t in suite.tools:
+            if t.name not in have and is_side_effecting(suite_name, t.name):
+                tool_entries.append(_entry(suite_name, t.name))
+        for e in tool_entries:
+            e.pop("constraints", None)
+            e.pop("bounds", None)
         return tool_entries + others
     if kind == "over_broad_targets":
         for e in tool_entries:
