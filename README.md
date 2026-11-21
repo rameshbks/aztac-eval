@@ -110,10 +110,16 @@ It uses CaMeL's own pipeline and log folder, runs the same workspace pairs as th
 records interpreter crashes in `results_camel/crashes.jsonl` instead of stopping (each counts as a
 failed task with no attack success). Results are written to `results_camel/summary.json`.
 
-**Gateway-only baselines** (`run_scripted.py --perturb static_role|over_broad_targets --approver approve_all --risk-threshold inf`).
+**Gateway-only baselines** (`run_scripted.py --perturb static_role|static_allowlist|over_broad_targets --approver approve_all --risk-threshold inf`).
 `static_role` grants every side-effecting tool of the suite without argument constraints, as a static per-tool
-policy in today's agent IAM would; `over_broad_targets` keeps the task's tools but drops all argument pins.
+policy would; `static_allowlist` restricts every target and amount to the union of those legitimate for any task
+(the strongest policy writable in advance); `over_broad_targets` keeps the task's tools but drops all argument pins.
 Compare with plain AZTAC under the same approver and threshold.
+
+**Trusted scope issuance.** Set `COMPILER_CLIENT_SECRET` (and optionally `COMPILER_CLIENT_ID`) on the ATS and on the
+compilation component; the ATS then accepts token exchanges only from that client (401 otherwise) and never
+accepts its own task tokens as subject tokens (`tests/test_aztac.py`). `experiments/boundary_test.py` probes a live
+deployment as a compromised runtime would (stolen user token, token re-exchange, edited or forged tokens, expiry, revocation).
 
 **Three-host deployment with Keycloak.** Host 1: `bash deploy/codespace_identity.sh <ATS_ADMIN_KEY>` (Keycloak
 and ATS). Host 2: `bash deploy/codespace_enforcement.sh <ATS_URL> <ATS_ADMIN_KEY> <SEED>` (two gateways and the

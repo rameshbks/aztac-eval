@@ -1,0 +1,32 @@
+{
+  "control: compiler exchange (expect 200)": {
+    "200": 20
+  },
+  "control: in-scope call (expect ALLOW)": {
+    "ALLOW": 20
+  },
+  "narrow token, attacker IBAN (expect DENY)": {
+    "DENY": 20
+  },
+  "stolen user token, no client credential, wide scope": {
+    "401": 20
+  },
+  "stolen user token, wrong client secret, wide scope": {
+    "401": 20
+  },
+  "task token re-exchanged for wide scope (even with compiler credential)": {
+    "400": 20
+  },
+  "tampered task token with widened scope": {
+    "DENY": 20
+  },
+  "self-signed forged token with wide scope": {
+    "DENY": 20
+  },
+  "expired task token (1 s TTL, 5 s leeway), in-scope call": {
+    "DENY": 3
+  },
+  "revoked task token, in-scope call": {
+    "REVOKED": 3
+  }
+}

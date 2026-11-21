@@ -200,3 +200,30 @@ def test_python_and_opa_pdp_agree():
         assert n > 1000
     finally:
         proc.terminate()
+
+
+def test_ats_accepts_scopes_only_from_authenticated_compiler(monkeypatch, tmp_path):
+    """A compromised runtime cannot obtain or widen a task token: the ATS requires the compiler's client
+    credential, and an ATS-issued task token is not accepted as a subject token."""
+    import json as _json
+    from fastapi.testclient import TestClient
+    monkeypatch.setenv("COMPILER_CLIENT_SECRET", "compiler-s3cret")
+    monkeypatch.setenv("ATS_KEY_PATH", str(tmp_path / "ats.json"))
+    monkeypatch.delenv("SUBJECT_JWKS_URL", raising=False)
+    from aztac.http_apps import build_ats_app
+    from aztac.tokens import TOKEN_EXCHANGE_GRANT
+    c = TestClient(build_ats_app())
+    user = c.post("/dev/user-token", json={"sub": "alice"}).json()["access_token"]
+    wide = _json.dumps([{"type": "agent_tool_invocation", "locations": ["banking"], "actions": ["send_money"]}])
+    base = {"grant_type": TOKEN_EXCHANGE_GRANT, "actor": "agent-1", "task_id": "t1", "authorization_details": wide}
+    assert c.post("/token", data={**base, "subject_token": user}).status_code == 401
+    assert c.post("/token", data={**base, "subject_token": user, "client_id": "scope-compiler",
+                                  "client_secret": "wrong"}).status_code == 401
+    ok = c.post("/token", data={**base, "subject_token": user, "client_id": "scope-compiler",
+                                "client_secret": "compiler-s3cret"})
+    assert ok.status_code == 200
+    task_token = ok.json()["access_token"]
+    # replaying the task token as a subject token to mint a broader one is rejected
+    r = c.post("/token", data={**base, "subject_token": task_token, "client_id": "scope-compiler",
+                               "client_secret": "compiler-s3cret"})
+    assert r.status_code in (400, 403)

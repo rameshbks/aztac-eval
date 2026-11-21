@@ -103,7 +103,7 @@ class ResourceGateway:
         t0 = time.perf_counter()
         try:
             claims = self.verifier.verify(token)
-        except jwt.InvalidTokenError as e:
+        except (jwt.InvalidTokenError, jwt.PyJWKClientError, KeyError, ValueError) as e:  # unknown key, bad format: fail closed
             return self._out(Decision(DENY, f"invalid token: {e}", violations=["invalid_token"]), None, t0)
         jti = claims["jti"]
         if jti in self.revocations:

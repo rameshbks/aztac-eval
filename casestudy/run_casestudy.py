@@ -71,7 +71,9 @@ class Backend:
         kc.raise_for_status()
         r = self.http.post(f"{self.a.ats_url}/token", data={
             "grant_type": TOKEN_EXCHANGE_GRANT, "subject_token": kc.json()["access_token"], "actor": "casestudy-agent",
-            "task_id": f"task-{uuid.uuid4().hex[:8]}", "authorization_details": json.dumps(scope)})
+            "task_id": f"task-{uuid.uuid4().hex[:8]}", "authorization_details": json.dumps(scope),
+            **({"client_id": os.getenv("COMPILER_CLIENT_ID", "scope-compiler"),
+                "client_secret": os.environ["COMPILER_CLIENT_SECRET"]} if os.getenv("COMPILER_CLIENT_SECRET") else {})})
         r.raise_for_status()
         self.token = r.json()["access_token"]
         return {"scope": scope, "compiler_rejected": comp.rejected, "compile_ms": compile_ms,

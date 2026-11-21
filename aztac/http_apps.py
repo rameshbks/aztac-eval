@@ -9,6 +9,8 @@ Configuration is by environment variable (see deploy/.env.example).
 
 from __future__ import annotations
 
+import base64
+import hmac
 import json
 import os
 import tempfile
@@ -52,9 +54,30 @@ def build_ats_app() -> FastAPI:
                             ttl_s=int(_env("ATS_TTL_S", "300")))
     app = FastAPI(title="AZTAC Agent Token Service")
 
+    # Only the trusted scope-compilation component may request agent tokens: it authenticates as an OAuth
+    # client (RFC 6749 client authentication, form or HTTP Basic). The agent runtime never holds this
+    # credential nor the user's token, so it cannot submit a scope of its own.
+    compiler_id = _env("COMPILER_CLIENT_ID", "scope-compiler")
+    compiler_secret = _env("COMPILER_CLIENT_SECRET")
+
+    def _client_ok(form_id, form_secret, authorization):
+        if not compiler_secret:
+            return True  # client authentication disabled (in-process experiments)
+        cid, csec = form_id, form_secret
+        if authorization and authorization.lower().startswith("basic "):
+            try:
+                cid, csec = base64.b64decode(authorization[6:]).decode().split(":", 1)
+            except Exception:
+                return False
+        return cid == compiler_id and csec is not None and hmac.compare_digest(csec, compiler_secret)
+
     @app.post("/token")
     def token(grant_type: str = Form(...), subject_token: str = Form(...), actor: str = Form(...),
-              task_id: str = Form(...), authorization_details: str = Form(...), ttl_s: int | None = Form(None)):
+              task_id: str = Form(...), authorization_details: str = Form(...), ttl_s: int | None = Form(None),
+              client_id: str | None = Form(None), client_secret: str | None = Form(None),
+              authorization: str | None = Header(None)):
+        if not _client_ok(client_id, client_secret, authorization):
+            raise HTTPException(401, "invalid_client")
         try:
             return ats.exchange(grant_type, subject_token, actor, task_id, json.loads(authorization_details), ttl_s)
         except PermissionError as e:

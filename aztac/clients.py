@@ -73,6 +73,9 @@ class HTTPStack:
                 "task_id": task_id, "authorization_details": json.dumps(details)}
         if ttl_s:
             data["ttl_s"] = str(ttl_s)
+        if os.getenv("COMPILER_CLIENT_SECRET"):  # the trusted compilation component authenticates to the ATS
+            data["client_id"] = os.getenv("COMPILER_CLIENT_ID", "scope-compiler")
+            data["client_secret"] = os.environ["COMPILER_CLIENT_SECRET"]
         r = self.c.post(f"{self.ats_url}/token", data=data)
         r.raise_for_status()
         return r.json()
