@@ -14,6 +14,7 @@ Add --stack http --ats-url ... --gateway-url ... to route every decision across 
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import os
 import random
@@ -28,7 +29,7 @@ from agentdojo.task_suite.load_suites import get_suites
 
 from aztac.agentdojo_integration import APPROVERS, AZTACContext, scripted_pipeline
 from aztac.clients import HTTPStack, InProcStack
-from aztac.scope import OracleCompiler, perturb
+from aztac.scope import OracleCompiler, perturb, scope_from_calls
 from aztac.scoring import run_pair
 
 
@@ -53,7 +54,7 @@ def main():
     p.add_argument("--risk-threshold", type=float, default=2.0)
     p.add_argument("--read-mode", default="suite", choices=["suite", "scoped"])
     p.add_argument("--perturb", default="none",
-                   choices=["none", "over_broad_tools", "over_broad_targets", "over_narrow", "static_role"])
+                   choices=["none", "over_broad_tools", "over_broad_targets", "over_narrow", "static_role", "static_allowlist"])
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--limit-user-tasks", type=int, default=None)
     p.add_argument("--stack", default="inproc", choices=["inproc", "http"])
@@ -80,7 +81,16 @@ def main():
                 ctx = None
                 if defense == "aztac":
                     pf = None
-                    if a.perturb != "none":
+                    if a.perturb == "static_allowlist":
+                        # Strongest static policy an administrator could write in advance: every tool any task
+                        # of this deployment uses, each target argument restricted to the union of all targets
+                        # legitimate for some task, and each bound set to the largest legitimate value.
+                        env0 = suite.load_and_inject_default_environment({})
+                        calls = [(c.function, dict(c.args)) for t in suite.user_tasks.values()
+                                 for c in t.ground_truth(env0.model_copy(deep=True))]
+                        union = scope_from_calls(sname, calls, a.read_mode)
+                        pf = lambda s, _u=union: copy.deepcopy(_u)
+                    elif a.perturb != "none":
                         pf = lambda s, _suite=suite: perturb(s, _suite, a.perturb, rng)
                     ctx = AZTACContext(stack=stack, compiler=OracleCompiler(a.read_mode),
                                        approver=APPROVERS[a.approver](), suite=suite, perturb_fn=pf)
